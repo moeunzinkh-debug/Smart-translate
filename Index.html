@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Smart Translator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #0f172a;
+            color: #f1f5f9;
+            font-family: 'Kantumruy Pro', sans-serif;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .loading-ring {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #3b82f6; 
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        textarea {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 transparent;
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-10 flex flex-col items-center">
+
+    <div class="max-w-6xl w-full mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl sm:text-4xl font-bold text-blue-400 mb-2">បកប្រែវៃឆ្លាត</h1>
+            <p class="text-slate-400">គាំទ្រអត្ថបទធម្មតា និងទម្រង់ Subtitle (SRT)</p>
+        </header>
+
+        <div class="glass-card rounded-3xl p-6 shadow-2xl">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Source Section -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">អត្ថបទដើម</span>
+                        <div class="flex gap-2">
+                            <span class="text-[10px] bg-blue-900/30 text-blue-400 px-2 py-1 rounded">Auto Detect</span>
+                        </div>
+                    </div>
+                    <textarea id="inputText" rows="12" class="w-full p-5 bg-slate-900/50 border border-slate-700 rounded-2xl outline-none text-white focus:border-blue-500 transition-all font-light" 
+                        placeholder="បញ្ចូលអត្ថបទធម្មតា ឬ SRT Subtitle ទីនេះ..."></textarea>
+                </div>
+
+                <!-- Result Section -->
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">លទ្ធផលបកប្រែ</span>
+                        <select id="targetLanguage" class="text-xs bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-blue-400 font-bold outline-none">
+                            <option value="km">🇰🇭 ភាសាខ្មែរ</option>
+                            <option value="en">🇺🇸 English</option>
+                            <option value="zh">🇨🇳 中文</option>
+                        </select>
+                    </div>
+                    <textarea id="translatedOutput" rows="12" readonly class="w-full p-5 bg-slate-900/30 border border-slate-800 rounded-2xl text-blue-100 font-light" placeholder="លទ្ធផលនឹងបង្ហាញទីនេះ..."></textarea>
+                </div>
+            </div>
+
+            <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-slate-800">
+                <div class="flex gap-2 w-full sm:w-auto">
+                    <button onclick="copyTranslation()" class="flex-1 sm:flex-none px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95">
+                        <i data-lucide="copy" class="w-4 h-4"></i> ចម្លង
+                    </button>
+                    <button onclick="clearText()" class="flex-1 sm:flex-none px-6 py-3 bg-red-900/20 text-red-400 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i> លុប
+                    </button>
+                </div>
+
+                <button id="translateBtn" onclick="generateTranslation()" class="w-full sm:w-auto px-12 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg shadow-blue-900/40">
+                    <span id="loading" class="hidden loading-ring"></span>
+                    <i id="btnIcon" data-lucide="zap" class="w-5 h-5"></i> 
+                    <span id="btnText">បកប្រែឥឡូវនេះ</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-6 p-4 bg-blue-900/10 border border-blue-900/20 rounded-2xl">
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+                <span class="text-blue-400 font-bold">ចំណាំ៖</span> ប្រសិនបើអ្នកបញ្ចូលអត្ថបទ Subtitle ប្រព័ន្ធនឹងរក្សាទុកលេខរៀង និងម៉ោងរបស់វាឱ្យនៅដដែល ហើយបកប្រែតែខ្លឹមសារប៉ុណ្ណោះ។ កម្មវិធីនេះក៏យល់ដឹងពីពាក្យស្លោក (Idioms) និងភាសានិយាយ (Slang) ផងដែរ។
+            </p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const apiKey = "AIzaSyCkeBPk3pOVb2VG67-LyRO9sDa9cXjDg2s";
+        const MODEL_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+        async function generateTranslation() {
+            const input = document.getElementById('inputText').value.trim();
+            const target = document.getElementById('targetLanguage').value;
+            if (!input) return;
+
+            const btn = document.getElementById('translateBtn');
+            const loading = document.getElementById('loading');
+            const icon = document.getElementById('btnIcon');
+            const text = document.getElementById('btnText');
+            const output = document.getElementById('translatedOutput');
+
+            btn.disabled = true;
+            loading.classList.remove('hidden');
+            icon.classList.add('hidden');
+            text.textContent = "កំពុងបកប្រែ...";
+            output.value = "";
+
+            // System Instructions សម្រាប់គាំទ្រ SRT និង Direct Translation
+            const systemPrompt = `You are a specialized translator. 
+            Your task is to translate input text into ${target}. 
+            
+            RULES:
+            1. Output ONLY the translation. No explanations.
+            2. If the input is in SRT format (includes numbers and timestamps like 00:00:00,000 --> 00:00:00,000), you MUST maintain the exact same format, sequence numbers, and timestamps. Only translate the dialogue/text content.
+            3. Translate idioms and slang into their natural cultural equivalent.
+            4. Preserve line breaks and paragraph structure.
+            5. Do not summarize; translate accurately.`;
+            
+            try {
+                const response = await fetch(MODEL_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        contents: [{ parts: [{ text: `Input to translate:\n${input}` }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+                
+                if (!response.ok) throw new Error();
+
+                const data = await response.json();
+                const result = data.candidates[0].content.parts[0].text.trim();
+                output.value = result;
+            } catch (e) {
+                output.value = "មានបញ្ហាបច្ចេកទេស។ ប្រសិនបើអ្នកប្រើ GitHub Pages សូមប្រាកដថាអ្នកបានកំណត់ Website Restriction រួចរាល់។";
+            } finally {
+                btn.disabled = false;
+                loading.classList.add('hidden');
+                icon.classList.remove('hidden');
+                text.textContent = "បកប្រែឥឡូវនេះ";
+            }
+        }
+
+        function copyTranslation() {
+            const output = document.getElementById('translatedOutput');
+            if(!output.value) return;
+            output.select();
+            document.execCommand('copy');
+            
+            const btn = event.currentTarget;
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> រួចរាល់';
+            lucide.createIcons();
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        function clearText() {
+            document.getElementById('inputText').value = "";
+            document.getElementById('translatedOutput').value = "";
+        }
+    </script>
+</body>
+</html>
