@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Translator & SRT Tools</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Professional Smart Translator</title>
     
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
         body {
+            font-family: 'Kantumruy Pro', sans-serif;
             background: radial-gradient(circle at top left, #1e293b, #0f172a);
-            color: #f1f5f9;
-            font-family: 'Kantumruy Pro', 'Inter', sans-serif;
             min-height: 100vh;
+            color: #f1f5f9;
         }
         .glass-card {
             background: rgba(30, 41, 59, 0.7);
@@ -21,198 +22,182 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
         }
-        .nav-btn.active {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-        }
-        .input-area {
-            background: rgba(15, 23, 42, 0.5);
-            transition: all 0.3s ease;
-        }
-        .input-area:focus {
-            background: rgba(15, 23, 42, 0.8);
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-        }
         .loading-ring {
             display: inline-block;
             width: 20px;
             height: 20px;
             border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: #f1f5f9; 
-            animation: spin 1s ease-in-out infinite;
+            border-top-color: #3b82f6;
+            animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        
+        textarea {
+            scrollbar-width: thin;
+            scrollbar-color: #334155 transparent;
+            transition: all 0.3s ease;
+        }
+        textarea:focus {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
     </style>
 </head>
 <body class="p-4 sm:p-10">
 
-    <div class="max-w-5xl mx-auto">
-        <header class="text-center mb-10 space-y-3">
-            <div class="inline-flex items-center justify-center p-3 bg-blue-600/20 rounded-2xl mb-2 border border-blue-500/30">
-                <i data-lucide="sparkles" class="w-8 h-8 text-blue-400"></i>
-            </div>
-            <h1 class="text-4xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-300">
-                មជ្ឈមណ្ឌលបកប្រែវៃឆ្លាត
+    <div class="max-w-6xl mx-auto">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-300 mb-2">
+                បកប្រែវៃឆ្លាត (Smart SRT)
             </h1>
-            <p class="text-slate-400 font-light max-w-md mx-auto">បកប្រែភាសាបានរហ័ស និងត្រឹមត្រូវ។</p>
+            <p class="text-slate-400">បកប្រែអត្ថបទ និង SRT ជាមួយ AI Gemini 1.5 Flash</p>
         </header>
 
-        <nav class="flex justify-center mb-10">
-            <div class="inline-flex p-1.5 bg-slate-800/50 backdrop-blur-md rounded-2xl border border-slate-700">
-                <button id="navTranslator" onclick="showView('translatorView')" class="nav-btn px-6 py-2.5 rounded-xl flex items-center gap-2 text-sm font-semibold transition-all duration-300 active">
-                    <i data-lucide="languages" class="w-4 h-4"></i> កម្មវិធីបកប្រែ
-                </button>
-                <button id="navSrtTiming" onclick="showView('srtTimingView')" class="nav-btn px-6 py-2.5 rounded-xl flex items-center gap-2 text-sm font-semibold text-slate-400 hover:text-white transition-all duration-300">
-                    <i data-lucide="clock-rewind" class="w-4 h-4"></i> កំណត់ពេលវេលា SRT
-                </button>
-            </div>
-        </nav>
-
-        <div id="translatorView" class="view-content transition-all duration-500">
-            <div class="glass-card rounded-3xl p-6 sm:p-8">
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center px-1">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">អត្ថបទដើម</span>
-                            <select id="sourceLanguage" class="text-xs bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-slate-300 outline-none cursor-pointer">
-                                <option value="en">🇺🇸 ភាសាអង់គ្លេស (English)</option>
-                                <option value="km">🇰🇭 ភាសាខ្មែរ (Khmer)</option>
-                                <option value="zh">🇨🇳 ភាសាចិន (Chinese)</option>
-                                <option value="auto">✨ ស្វែងរកភាសាដោយស្វ័យប្រវត្តិ</option>
-                            </select>
-                        </div>
-                        <textarea id="inputText" rows="10" class="w-full p-6 input-area border border-slate-700 rounded-3xl outline-none text-white placeholder-slate-600 font-light" placeholder="វាយបញ្ចូលអត្ថបទដើមទីនេះ..."></textarea>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="glass-card rounded-3xl p-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">អត្ថបទដើម</span>
+                        <select id="sourceLanguage" class="bg-slate-800 text-slate-300 text-xs rounded-lg px-2 py-1 mt-1 outline-none border border-slate-700">
+                            <option value="auto">ស្វែងរកភាសាស្វ័យប្រវត្តិ</option>
+                            <option value="English">English</option>
+                            <option value="Khmer">Khmer</option>
+                            <option value="Chinese">Chinese</option>
+                        </select>
                     </div>
-
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center px-1">
-                            <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">លទ្ធផលបកប្រែ</span>
-                            <select id="targetLanguage" class="text-xs bg-slate-800 border border-slate-700 rounded-lg px-2 py-1 text-blue-400 font-bold outline-none cursor-pointer">
-                                <option value="km">🇰🇭 ភាសាខ្មែរ (Khmer)</option>
-                                <option value="en">🇺🇸 ភាសាអង់គ្លេស (English)</option>
-                                <option value="zh">🇨🇳 ភាសាចិន (Chinese)</option>
-                            </select>
-                        </div>
-                        <textarea id="translatedOutput" rows="10" readonly class="w-full p-6 bg-slate-900/30 border border-slate-800 rounded-3xl text-blue-100 font-light focus:outline-none" placeholder="លទ្ធផលនឹងបង្ហាញទីនេះ..."></textarea>
-                    </div>
-                </div>
-
-                <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-800/50 pt-6">
-                    <div class="flex gap-3">
-                        <button onclick="copyTranslation()" class="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-semibold rounded-xl transition-all">
-                            <i data-lucide="copy" class="w-4 h-4"></i> ចម្លង
-                        </button>
-                        <button onclick="clearTextAreas()" class="flex items-center gap-2 px-6 py-3 bg-red-900/20 hover:bg-red-900/40 text-red-400 font-semibold rounded-xl transition-all">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i> លុប
-                        </button>
-                    </div>
-
-                    <button id="translateBtn" onclick="generateTranslation()" class="w-full sm:w-auto px-12 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-2xl shadow-lg shadow-blue-900/20 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50">
-                        <span id="translateLoadingIndicator" class="hidden loading-ring mr-2"></span>
-                        <i data-lucide="zap" class="w-5 h-5"></i> បកប្រែឥឡូវនេះ
+                    <button onclick="clearText()" class="text-slate-500 hover:text-red-400 transition-colors">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
                 </div>
+                <textarea id="inputText" rows="12" class="w-full bg-slate-900/50 border border-slate-700 rounded-2xl p-4 text-slate-200 focus:outline-none" placeholder="បញ្ចូលអត្ថបទ ឬកូដ SRT នៅទីនេះ..."></textarea>
+            </div>
+
+            <div class="glass-card rounded-3xl p-6 shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">លទ្ធផលបកប្រែ</span>
+                        <select id="targetLanguage" class="bg-slate-800 text-blue-400 text-xs rounded-lg px-2 py-1 mt-1 outline-none border border-slate-700">
+                            <option value="Khmer">Khmer (ភាសាខ្មែរ)</option>
+                            <option value="English">English</option>
+                            <option value="Chinese">Chinese</option>
+                        </select>
+                    </div>
+                    <button id="copyBtn" onclick="copyTranslation()" class="text-slate-500 hover:text-blue-400 transition-colors">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <textarea id="translatedOutput" rows="12" readonly class="w-full bg-slate-900/30 border border-slate-700 rounded-2xl p-4 text-blue-100 focus:outline-none" placeholder="លទ្ធផលនឹងបង្ហាញនៅទីនេះ..."></textarea>
             </div>
         </div>
 
-        <div id="srtTimingView" class="hidden view-content transition-all duration-500">
-            <div class="glass-card rounded-3xl p-6 sm:p-8">
-                <h2 class="text-xl font-bold mb-4">មុខងារ SRT កំពុងរៀបចំ...</h2>
-            </div>
+        <div class="mt-8">
+            <button id="translateBtn" onclick="generateTranslation()" class="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 rounded-2xl font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-95 flex items-center justify-center gap-3">
+                <span id="loading" class="loading-ring hidden"></span>
+                <i id="btnIcon" data-lucide="languages" class="w-5 h-5"></i>
+                <span id="btnText">ចាប់ផ្ដើមបកប្រែ</span>
+            </button>
         </div>
-    </div>
 
-    <div id="messageBox" class="fixed inset-0 z-50 hidden flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm">
-        <div class="glass-card max-w-sm w-full p-8 rounded-3xl text-center">
-            <div id="msgIcon" class="mb-4 inline-flex p-4 rounded-full bg-blue-500/10 text-blue-400"></div>
-            <h4 id="messageTitle" class="text-xl font-bold mb-2"></h4>
-            <p id="messageContent" class="text-slate-400 mb-6 font-light"></p>
-            <button onclick="hideMessage()" class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl">យល់ព្រម</button>
-        </div>
+        <div id="messageBox" class="hidden mt-4 p-4 rounded-xl text-center text-sm"></div>
     </div>
 
     <script>
+        // Initialize Icons
         lucide.createIcons();
 
-        // Constants
-        const API_KEY = "AIzaSyAiZODgbIIDVtUqGuWfiuKkGwODQ2cDYZs"; // បញ្ចូល API Key របស់អ្នក
-        const MODEL_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
-        function showView(viewId) {
-            document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
-            document.getElementById(viewId).classList.remove('hidden');
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            event.currentTarget.classList.add('active');
-        }
-
-        function showMessage(title, content, isError = true) {
-            document.getElementById('messageTitle').textContent = title;
-            document.getElementById('messageContent').textContent = content;
-            document.getElementById('messageBox').classList.remove('hidden');
-            const iconDiv = document.getElementById('msgIcon');
-            iconDiv.innerHTML = isError ? '<i data-lucide="alert-circle"></i>' : '<i data-lucide="check"></i>';
-            lucide.createIcons();
-        }
-
-        function hideMessage() { document.getElementById('messageBox').classList.add('hidden'); }
+        // Configuration
+        const API_KEY = "AIzaSyAiZODgbIIDVtUqGuWfiuKkGwODQ2cDYZs"; 
+        const MODEL_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
 
         async function generateTranslation() {
-            const inputText = document.getElementById('inputText').value.trim();
-            if (!inputText) return showMessage("កំហុស", "សូមបញ្ចូលអត្ថបទដើម");
-
-            const srcLang = document.getElementById('sourceLanguage').options[document.getElementById('sourceLanguage').selectedIndex].text;
-            const targetLang = document.getElementById('targetLanguage').options[document.getElementById('targetLanguage').selectedIndex].text;
+            const input = document.getElementById('inputText').value.trim();
+            const srcLang = document.getElementById('sourceLanguage').value;
+            const targetLang = document.getElementById('targetLanguage').value;
             
             const btn = document.getElementById('translateBtn');
+            const btnText = document.getElementById('btnText');
+            const loading = document.getElementById('loading');
+            const icon = document.getElementById('btnIcon');
             const outputArea = document.getElementById('translatedOutput');
-            
+
+            if (!input) {
+                showNotice("សូមបញ្ចូលអត្ថបទជាមុនសិន!", "error");
+                return;
+            }
+
+            // UI State: Loading
             btn.disabled = true;
-            outputArea.value = "កំពុងបកប្រែ...";
+            loading.classList.remove('hidden');
+            icon.classList.add('hidden');
+            btnText.textContent = "កំពុងបកប្រែ...";
+            outputArea.placeholder = "AI កំពុងធ្វើការបកប្រែ...";
 
-            const prompt = `Translate the following text from ${srcLang} to ${targetLang}. 
-            Text: ${inputText}
-            Note: Provide only the translated text.`;
-
-            const payload = {
-                contents: [{ parts: [{ text: prompt }] }]
-            };
+            const systemPrompt = `You are a professional translator. 
+            Your task: Translate input text into ${targetLang}.
+            Rules:
+            1. Output ONLY the translated text. No explanations.
+            2. If the input is in SRT format (includes timestamps like 00:00:10,000 --> 00:00:12,000), you MUST maintain the exact format, sequence numbers, and timestamps. Only translate the dialogue text.
+            3. Use natural sounding ${targetLang} and preserve the original tone.
+            4. Do not summarize; translate accurately line by line.`;
 
             try {
-                const response = await fetch(MODEL_URL, {
+                const response = await fetch(`${MODEL_URL}?key=${API_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        contents: [{ 
+                            parts: [{ text: `From: ${srcLang}\nTo: ${targetLang}\n\nContent:\n${input}` }] 
+                        }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
                 });
+
+                if (!response.ok) throw new Error("API Connection Failed");
+
                 const data = await response.json();
-                if (data.candidates && data.candidates[0].content) {
-                    outputArea.value = data.candidates[0].content.parts[0].text;
+                
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    const result = data.candidates[0].content.parts[0].text;
+                    outputArea.value = result;
+                    showNotice("ការបកប្រែបានជោគជ័យ!", "success");
                 } else {
-                    throw new Error("Invalid response");
+                    throw new Error("Invalid API Response");
                 }
             } catch (error) {
-                outputArea.value = "កំហុស៖ មិនអាចបកប្រែបានទេ។ សូមពិនិត្យ API Key ឬអ៊ីនធឺណិត។";
+                console.error(error);
+                showNotice("មានបញ្ហាបច្ចេកទេស៖ សូមពិនិត្យ API Key ឬអ៊ីនធឺណិត!", "error");
             } finally {
+                // UI State: Reset
                 btn.disabled = false;
+                loading.classList.add('hidden');
+                icon.classList.remove('hidden');
+                btnText.textContent = "ចាប់ផ្ដើមបកប្រែ";
             }
         }
 
-        function copyTranslation() {
-            const text = document.getElementById('translatedOutput').value;
-            if(!text) return;
-            navigator.clipboard.writeText(text);
-            showMessage("ជោគជ័យ", "បានចម្លងទៅកាន់ Clipboard", false);
+        function showNotice(msg, type) {
+            const box = document.getElementById('messageBox');
+            box.textContent = msg;
+            box.className = `mt-4 p-4 rounded-xl text-center text-sm ${type === 'success' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`;
+            box.classList.remove('hidden');
+            setTimeout(() => box.classList.add('hidden'), 4000);
         }
 
-        function clearTextAreas() {
-            document.getElementById('inputText').value = '';
-            document.getElementById('translatedOutput').value = '';
+        function copyTranslation() {
+            const output = document.getElementById('translatedOutput');
+            if (!output.value) return;
+            output.select();
+            document.execCommand('copy');
+            showNotice("បានចម្លងទៅកាន់ Clipboard!", "success");
+        }
+
+        function clearText() {
+            document.getElementById('inputText').value = "";
+            document.getElementById('translatedOutput').value = "";
+            document.getElementById('translatedOutput').placeholder = "លទ្ធផលនឹងបង្ហាញនៅទីនេះ...";
         }
     </script>
 </body>
-    </html>
+</html>
